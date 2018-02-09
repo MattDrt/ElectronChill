@@ -8,6 +8,9 @@ var livesNumber : int;
 var scoreNumber : int;
 var waitTime  : float;
 
+var timer : float = 0.0;
+var timeLimit : float = 5.0;
+
 function Start () {
     Lletter = GameObject.Find("Lletter");
     scoreText = GameObject.Find("Score");
@@ -31,6 +34,13 @@ function Start () {
 
 function Update () {	
 
+	timer+=Time.deltaTime;
+    if (timer >= timeLimit){
+       timer = 0.0;
+       Lletter.transform.position.x = generateX();
+	   Lletter.transform.position.y = generateY(); 
+    }
+	
     if(Lletter.transform.position.y < -4.35 && livesNumber > 0){	
 		
         livesNumber += 1;
@@ -87,7 +97,7 @@ function generateCoordinates(){
 function OnMouseDown(){
     //Place the Lletter at another point
     generateCoordinates();
-
+    timer = 0.0;
     //Increase the walking speed by 0.01
-    walkingSpeed += 0.01;
+    //walkingSpeed += 0.01;
 }
