@@ -12,10 +12,11 @@ public class LetterScript : MonoBehaviour {
     public const float TargetScale = 0.25f;
 
     UnityEngine.UI.Image circle_timer;
-    public const int FramesCount = 100;
+    public const float FramesCount = 500;
     public const float AnimationTimeSeconds = 2;
     public float _deltaTime = AnimationTimeSeconds / FramesCount;
-    public float _dx = (TargetScale - InitScale) / FramesCount;
+    public float _dx = (InitScale - TargetScale) / FramesCount;
+ 
     public bool _stopScale = true;
     public GameObject circleLetterN;
     public GameObject circleLetterL;
@@ -52,9 +53,11 @@ public class LetterScript : MonoBehaviour {
     GameObject currentGameO;
 	// Use this for initialization
 	void Start () {
-
-		//Lletter = GameObject.Find("Lletter");GameObject.FindGameObjectsWithTag("fred");
-		Lletter = GameObject.FindGameObjectWithTag("Lletter");
+        float FramesCount = 100;
+        _deltaTime = AnimationTimeSeconds / FramesCount;
+        _dx = (InitScale - TargetScale) / FramesCount;
+        //Lletter = GameObject.Find("Lletter");GameObject.FindGameObjectsWithTag("fred");
+        Lletter = GameObject.FindGameObjectWithTag("Lletter");
 			//GameObject.Find("Lletter").GetComponent<GameObject>();
 		Nletter = GameObject.FindGameObjectWithTag("Nletter");
 		MLletter = GameObject.FindGameObjectWithTag("MLletter");
@@ -78,12 +81,22 @@ public class LetterScript : MonoBehaviour {
         N = 0;
         L = 0;
         ML = 0;
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+       
+        InvokeRepeating("resetSize", 1f, 3f);
     }
+    bool randomBoolean()
+{
+    if (UnityEngine.Random.value >= 0.5)
+    {
+        return true;
+    }
+    return false;
+}
 
 
-
-	// Update is called once per frame
-	void Update () {
+// Update is called once per frame
+void Update () {
         /*
 		timer+=Time.deltaTime;
 		if (timer >= timeLimit) {
@@ -96,9 +109,88 @@ public class LetterScript : MonoBehaviour {
             L = Int32.Parse(objectifL.text);
             ML = Int32.Parse(objectifML.text);
         }
-
-    }
+       ;
     
+
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+   
+        foreach (GameObject go in allObjects)   
+        {
+            
+            if (go.transform.childCount > 0 && go.layer == 0 )
+            {
+                if (go.transform.GetChild(0).transform.localScale.x < 0.25f)
+                    StartCoroutine(FadeTo(go, 0.0f, 0.5f));
+                else if ((go.transform.GetChild(0).transform.localScale.x > 0.39f))
+                {
+
+                    StartCoroutine(Checklasthits());
+                    StartCoroutine(FadeTo(go, 1f, 0.5f));
+                    StartCoroutine(CollisionCheckWait(go));
+                }
+
+            }
+        }
+       
+       
+    }
+
+    int resetSize()
+    {
+   
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+
+        foreach (GameObject gob in allObjects)
+        {
+            if (gob.transform.childCount > 0 && gob.layer == 0)
+            {
+                if ((gob.transform.GetChild(0).transform.localScale.x < 0.25f))
+                {
+                    if (randomBoolean())
+                    {
+                        generatePos(gob);
+                        gob.transform.GetChild(0).transform.localScale = Vector2.one * 0.40f;
+                        break;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    void generatePos(GameObject obj)
+    {
+        float x = generateX();
+        float y = generateY();
+        Vector2 objPos2D = new Vector2(x, y);
+        Vector2 originPos2D = new Vector2(obj.transform.position.x, obj.transform.position.y);
+        Vector2 dir = (objPos2D - originPos2D).normalized;
+        RaycastHit2D hitobj = Physics2D.Raycast(objPos2D, dir);
+        if (hitobj.collider != null)
+        {
+            while (hitobj.collider != null)
+            {
+                x = generateX();
+                y = generateY();
+                objPos2D = new Vector2(x, y);
+
+                dir = (objPos2D - originPos2D).normalized;
+                hitobj = Physics2D.Raycast(objPos2D, dir);
+
+            }
+            obj.GetComponent<Rigidbody2D>().transform.position = new Vector3(x, y, obj.GetComponent<Rigidbody2D>().transform.position.z);
+            obj.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            obj.transform.GetComponent<Renderer>().enabled = true;
+
+
+        }
+        else
+        {
+            obj.GetComponent<Rigidbody2D>().transform.position = new Vector3(x, y, obj.GetComponent<Rigidbody2D>().transform.position.z);
+            obj.transform.GetComponent<Renderer>().enabled = true;
+            obj.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+        }
+    }
     void FixedUpdate()
     {
         
@@ -133,15 +225,22 @@ public class LetterScript : MonoBehaviour {
                         hitobj = Physics2D.Raycast(objPos2D, dir);
 
                     }
-                    
-                    currentGameO.GetComponent<Rigidbody2D>().transform.position = new Vector3(x, y, currentGameO.GetComponent<Rigidbody2D>().transform.position.z);
-                    
-                }
-          else
-                    currentGameO.GetComponent<Rigidbody2D>().transform.position = new Vector3(x, y, currentGameO.GetComponent<Rigidbody2D>().transform.position.z);
+                    //currentGameO.GetComponent<Rigidbody2D>().transform.position = new Vector3(x, y, currentGameO.GetComponent<Rigidbody2D>().transform.position.z);
+                    currentGameO.transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+                    currentGameO.transform.GetComponent<Renderer>().enabled = false;
 
-                StartCoroutine(Breath(currentGameO));
-                StartCoroutine(CollisionCheckWait(currentGameO));
+                    currentGameO.transform.GetChild(0).transform.localScale = Vector2.one * 0.40f;
+                }
+                else
+                {
+                    //currentGameO.GetComponent<Rigidbody2D>().transform.position = new Vector3(x, y, currentGameO.GetComponent<Rigidbody2D>().transform.position.z);
+                    currentGameO.transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+                    currentGameO.transform.GetComponent<Renderer>().enabled = false;
+                    currentGameO.transform.GetChild(0).transform.localScale = Vector2.one * 0.40f;
+                }
+             
+               
+            
             }      
         }
        
@@ -186,12 +285,19 @@ public class LetterScript : MonoBehaviour {
 
     IEnumerator Checklasthits()
     {
-        yield return new WaitForFixedUpdate();  
+      yield return new WaitForSeconds(seconds: 1f); ;  
     }
     IEnumerator CollisionCheckWait(GameObject obj)
     {
-        yield return new WaitForSeconds(seconds:0.5f);
-        obj.GetComponent<Renderer>().enabled = true;
+     
+       
+        StartCoroutine(Breath(obj));
+     
+        Debug.Log(obj.transform.GetChild(0).transform.localScale.x + "scale object");
+
+        yield return new WaitForSeconds(seconds:0.0f);
+        
+ 
         //update_score(obj);
         
     }
@@ -220,46 +326,68 @@ public class LetterScript : MonoBehaviour {
             objectifML.text = " " + i;
         }
     }
-
-    public IEnumerator Breath(GameObject obj)
+    public IEnumerator generateObj(GameObject obj)
     {
+       
+          
+     
+        StartCoroutine(FadeToGen(obj, 1f, 0.5f));
+        yield return new WaitForSeconds(seconds: 0.7f);
 
-     // float  _currentScale = obj.transform.GetChild(0).localScale.x;
 
+
+    }
+public IEnumerator Breath(GameObject obj)
+    {
         float _currentScale = obj.transform.GetChild(0).transform.localScale.x;
         Debug.Log(_currentScale +"curr scale");
-
-        while (_currentScale >= TargetScale)
-        {
-            _currentScale += _dx;
-      
-            obj.transform.GetChild(0).transform.localScale= Vector3.one * _currentScale;
-                yield return new WaitForSeconds(_deltaTime);
-        }
-    
-        /*
-        while (!_upScale)
+        Debug.Log(_dx + "dx");
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / 2.0f)
         {
             _currentScale -= _dx;
-            if (_currentScale < InitScale)
-            {
-                _upScale = true;
-                _currentScale = InitScale;
-            }
-            obj.transform.GetChild(0).localScale = Vector3.one * _currentScale;
-            yield return new WaitForSeconds(_deltaTime);
+            obj.transform.GetChild(0).transform.localScale = Vector2.one * _currentScale;           
+            yield return null;
+        }                     
+    }
+    IEnumerator FadeTo(GameObject obj, float aValue, float aTime)
+    {
+        float alpha2 = obj.transform.GetChild(0).GetComponent<Renderer>().material.color.a;
+        float alpha = obj.transform.GetComponent<Renderer>().material.color.a;
 
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / aTime)
+        {
+            Color newColor = new Color(1, 1, 1, Mathf.Lerp(alpha, aValue, t));
+            Color newColor2 = new Color(1, 1, 1, Mathf.Lerp(alpha2, aValue, t));
+            obj.transform.GetChild(0).transform.GetComponent<Renderer>().material.color = newColor2;    
+            obj.transform.GetComponent<Renderer>().material.color = newColor;
+        
+            yield return null;
         }
-        */
     }
-    void penalite()
+    IEnumerator FadeToGen(GameObject obj, float aValue, float aTime)
     {
-        circle_timer.fillAmount -= 0.25f;
+        float alpha2 = obj.transform.GetChild(0).GetComponent<Renderer>().material.color.a;
+        float alpha = obj.transform.GetComponent<Renderer>().material.color.a;
+
+      
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / aTime)
+        {
+            Color newColor = new Color(1, 1, 1, Mathf.Lerp(alpha, aValue, t));
+            Color newColor2 = new Color(1, 1, 1, Mathf.Lerp(alpha2, aValue, t));
+            obj.transform.GetChild(0).transform.GetComponent<Renderer>().material.color = newColor2;
+            obj.transform.GetComponent<Renderer>().material.color = newColor;
+
+            yield return null;
+        }
+    }
+    void penalite(float penalite)
+    {
+        circle_timer.fillAmount -= penalite;
     }
 
-    void bonus()
+    void bonus(float bonus)
     {
-        circle_timer.fillAmount += 0.5f;
+        circle_timer.fillAmount += bonus;
     }
     void OnMouseDown()
     {
@@ -267,9 +395,12 @@ public class LetterScript : MonoBehaviour {
         if (gameObject.name == "Lletter")
         {
             if (L == 0)
-                penalite();
+                penalite(3.0F);
             //int i = Int32.Parse(objectifL.text);
+            if(gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
             L--;
+            else
+                penalite(3.0F);
             L = L < 0 ? 0 : L;
             //objectifL.text = " " + i;
         }
@@ -277,8 +408,11 @@ public class LetterScript : MonoBehaviour {
         {
             //int i = Int32.Parse(objectifN.text);
             if (N == 0)
-                penalite();
-            N--;
+                penalite(3.0F);
+            if (gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
+                N--;
+            else
+                penalite(3.0F);
             N = N < 0 ? 0 : N;
             //objectifN.text = " " + i;
         }
@@ -286,14 +420,17 @@ public class LetterScript : MonoBehaviour {
         {
             //int i = Int32.Parse(objectifML.text);
             if (ML == 0)
-                penalite();
-            ML--;
+                penalite(3.0F);
+            if (gameObject.transform.GetChild(0).transform.localScale.x < 0.22f)
+                ML--;
+            else
+                penalite(3.0F);
             ML = ML < 0 ? 0 : ML;
             //objectifML.text = " " + i;
         }
         else if (gameObject.name == "Fletter")
         {
-            penalite();
+            penalite(3.0F);
         }
 
         if (N == 0 && L == 0 && ML == 0)
@@ -301,7 +438,7 @@ public class LetterScript : MonoBehaviour {
             objectifN.text = " " + N.ToString();
             objectifL.text = " " + L.ToString();
             objectifML.text = " " + ML.ToString();
-            bonus();
+            bonus(3.0f);
             //TODO Circle_timer.fillAmount = 1;
         }
 

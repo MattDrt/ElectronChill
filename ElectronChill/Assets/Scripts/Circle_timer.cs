@@ -24,6 +24,16 @@ public class Circle_timer : MonoBehaviour
         if (circle_timer.fillAmount == 0)
         {
             Application.LoadLevel("GameOver");
+            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+            foreach (GameObject go in allObjects)
+            {
+
+                if (go.transform.childCount > 0 && go.layer == 0)
+                {
+                    go.transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+                    go.transform.GetComponent<Renderer>().enabled = false;
+                }
+            }
         }
     }
 
