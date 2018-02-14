@@ -1,18 +1,22 @@
 ﻿import UnityEngine.UI;
 var Circle_timer:  UnityEngine.UI.Image;
 var Lletter : GameObject;
+var Nletter : GameObject;
+var MLletter : GameObject;
 var scoreText : GameObject;
 var livesText : GameObject;
 var walkingSpeed : double;
 var livesNumber : int;
 var scoreNumber : int;
 var waitTime  : float;
-
+var rayHit: RaycastHit;
 var timer : float = 0.0;
 var timeLimit : float = 5.0;
 
 function Start () {
     Lletter = GameObject.Find("Lletter");
+    Nletter = GameObject.Find("Nletter");
+    MLletter = GameObject.Find("Lletter");
     scoreText = GameObject.Find("Score");
     livesText = GameObject.Find("Lives");
     Circle_timer = GameObject.Find("Circle_timer").GetComponent(Image);
@@ -30,6 +34,11 @@ function Start () {
     //Place the ant in a random position on start of the game
     Lletter.transform.position.x = generateX();
     Lletter.transform.position.y = generateY();
+
+    // Nletter.SetActive(false);
+    //GameObject.Find("Nletter").GetComponent(Renderer).enabled = false;
+    //GameObject.Find("Lletter").GetComponent(Renderer).enabled = false;
+    //GameObject.Find("MLletter").GetComponent(Renderer).enabled = false;
 }
 
 function Update () {	
@@ -37,11 +46,20 @@ function Update () {
 	timer+=Time.deltaTime;
     if (timer >= timeLimit){
        timer = 0.0;
-       Lletter.transform.position.x = generateX();
-	   Lletter.transform.position.y = generateY(); 
+
+
+	   //r = Random.Range(-4.0,4.0);
+
+	   generateCoordinates(Nletter);
+	   generateCoordinates(Lletter);
+	   generateCoordinates(MLletter);
+	   //if ()
+	   GameObject.Find("Nletter").GetComponent(Renderer).enabled = true;
+	   GameObject.Find("Lletter").GetComponent(Renderer).enabled = !GameObject.Find("Lletter").GetComponent(Renderer).enabled ;
+	   GameObject.Find("MLletter").GetComponent(Renderer).enabled = true; 
     }
 	
-    if(Lletter.transform.position.y < -4.35 && livesNumber > 0){	
+    /*if(Lletter.transform.position.y < -4.35 && livesNumber > 0){	
 		
         livesNumber += 1;
         livesText.GetComponent(UI.Text).text = "Lives Remaining: " + livesNumber;
@@ -51,17 +69,9 @@ function Update () {
         Destroy(GameObject.Find("Lletter"));
        
 
-    }else{
+    }*/else{
 
         Lletter.transform.position.y -= walkingSpeed;
-    }
-    
-    
-    Circle_timer.fillAmount -= 1.0 / waitTime * Time.deltaTime;
-
-    if(Circle_timer.fillAmount == 0)
-    {
-        gameOver();
     }
 }
 
@@ -82,21 +92,32 @@ function generateY(){
     return y;
 }
 
-//Move the "Lletter" to the new coordiantess
-function generateCoordinates(){
-    //You clicked it!
-    scoreNumber += 1;
-
+function generateLetter(){
+	var r = Random.Range(1,3);
     //Update the score display
+   // GameObject.Find("MLletter").GetComponent(Renderer).enabled;
     scoreText.GetComponent(UI.Text).text = "Score: " + scoreNumber;
     Lletter.transform.position.x = generateX();
     Lletter.transform.position.y = generateY();
 }
 
+//Move the "Lletter" to the new coordiantess
+function generateCoordinates(obj){
+    //You clicked it!
+    scoreNumber += 1;
+    var o : GameObject = obj;
+    //Update the score display
+    scoreText.GetComponent(UI.Text).text = "Score: " + scoreNumber;
+    o.transform.position.x = generateX();
+    o.transform.position.y = generateY();
+}
+
 //If tapped or clicked
 function OnMouseDown(){
+	var lastClicked : GameObject = rayHit.collider.gameObject;
     //Place the Lletter at another point
-    generateCoordinates();
+
+    generateCoordinates(lastClicked);
     timer = 0.0;
     //Increase the walking speed by 0.01
     //walkingSpeed += 0.01;
