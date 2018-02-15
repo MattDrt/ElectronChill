@@ -12,6 +12,7 @@ public class LetterScript : MonoBehaviour {
     public const float TargetScale = 0.25f;
 
     UnityEngine.UI.Image circle_timer;
+    UnityEngine.UI.Text Score;
     public const float FramesCount = 500;
     public const float AnimationTimeSeconds = 2;
     public float _deltaTime = AnimationTimeSeconds / FramesCount;
@@ -34,18 +35,18 @@ public class LetterScript : MonoBehaviour {
     GameObject Lletter ;
 	GameObject Nletter;
 	GameObject MLletter;
-
-	Text scoreText;
-	Text livesText;
+  //  GameObject scoreText;
+    
+    Text livesText;
 
 	public Text objectifN;
 	public Text objectifL;
 	public Text objectifML;
 
 	int livesNumber;
-	int scoreNumber;
-
-
+	public Text Scoretext;
+    static int scoreNumber;
+    int combo;
 
 
     public String lasthit;
@@ -62,22 +63,22 @@ public class LetterScript : MonoBehaviour {
 		Nletter = GameObject.FindGameObjectWithTag("Nletter");
 		MLletter = GameObject.FindGameObjectWithTag("MLletter");
         circle_timer = GameObject.Find("Circle_timer").GetComponent<UnityEngine.UI.Image>();
-
-        scoreText = GameObject.Find("Score").GetComponent<Text>();
-		livesText = GameObject.Find("Lives").GetComponent<Text>();
+      //  scoreText = GameObject.Find("Score").GetComponent<UnityEngine.UI.Text>();
+        //  scoreText = GameObject.Find("Score").GetComponent<Text>();
+        livesText = GameObject.Find("Lives").GetComponent<Text>();
 
 
 		//Initialize the values of walking speed
 		float walkingSpeed = 0.0f;
-		livesNumber = 3;
+		livesNumber = 1;
 		scoreNumber = 0;
-
+        combo = 1;
 
 		//Initialize the GUI components
 		//livesText.GetComponent(UnityEngine.UI.Text).guiText = "Lives Remaining: " + livesNumber;
-		livesText.text  = "Lives Remaining: " + livesNumber;;
+		livesText.text  = "Level " + livesNumber;;
 		//scoreText.GetComponent(UnityEngine.UI.Text).guiText = "Score: " + scoreNumber;
-		scoreText.text = "Score: " + scoreNumber;
+		//scoreText.text = "Score: ";
         N = 0;
         L = 0;
         ML = 0;
@@ -110,8 +111,8 @@ void Update () {
             ML = Int32.Parse(objectifML.text);
         }
        ;
-    
-
+     
+        //scoreNumber = Int32.Parse(Scoretext.text);
         GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
    
         foreach (GameObject go in allObjects)   
@@ -120,7 +121,11 @@ void Update () {
             if (go.transform.childCount > 0 && go.layer == 0 )
             {
                 if (go.transform.GetChild(0).transform.localScale.x < 0.25f)
+                {
                     StartCoroutine(FadeTo(go, 0.0f, 0.5f));
+                  
+             
+                }
                 else if ((go.transform.GetChild(0).transform.localScale.x > 0.39f))
                 {
 
@@ -148,6 +153,22 @@ void Update () {
                 {
                     if (randomBoolean())
                     {
+                        if (gob.transform.GetComponent<Renderer>().enabled == true)
+                        {
+                          
+                      
+                            if ( (gob.name == "Fletter"))
+                            {
+                             scoreNumber += 100 * combo;
+                            }
+                            else if (gob.name == "Lletter" && L==0)
+                                scoreNumber += 100 * combo;
+                            else if (gob.name == "MLletter" && ML == 0)
+                                scoreNumber += 100 * combo;
+                            else if (gob.name == "Nletter" && N == 0)
+                                scoreNumber += 100 * combo;
+                          }
+                        Scoretext.text = scoreNumber.ToString();
                         generatePos(gob);
                         gob.transform.GetChild(0).transform.localScale = Vector2.one * 0.40f;
                         break;
@@ -269,8 +290,8 @@ void Update () {
         float x = generateX();
         float y = generateY();
         //You clicked it!
-        scoreNumber += 1;
         StartCoroutine(moveObject(obj, x, y));
+
         Debug.Log(obj.name+" is generated" + obj.GetComponent<Rigidbody2D>().bodyType + obj.tag);
            
     }
@@ -353,9 +374,10 @@ public IEnumerator Breath(GameObject obj)
     {
         float alpha2 = obj.transform.GetChild(0).GetComponent<Renderer>().material.color.a;
         float alpha = obj.transform.GetComponent<Renderer>().material.color.a;
-
+     
         for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / aTime)
         {
+
             Color newColor = new Color(1, 1, 1, Mathf.Lerp(alpha, aValue, t));
             Color newColor2 = new Color(1, 1, 1, Mathf.Lerp(alpha2, aValue, t));
             obj.transform.GetChild(0).transform.GetComponent<Renderer>().material.color = newColor2;    
@@ -382,55 +404,136 @@ public IEnumerator Breath(GameObject obj)
     }
     void penalite(float penalite)
     {
+            
+        //Circle_timer circ = circle_timer.GetComponent<Circle_timer>();
+
         circle_timer.fillAmount -= penalite;
+    
+        
+      //  Debug.Log("test penal" + circ.WaitTime);
     }
 
     void bonus(float bonus)
     {
+   
         circle_timer.fillAmount += bonus;
     }
+
     void OnMouseDown()
     {
+ 
         Debug.Log(gameObject.name + "N " + N + " L " + L + " ML" + ML);
         if (gameObject.name == "Lletter")
         {
-            if (L == 0)
-                penalite(3.0F);
+            if (L == 0 && (gameObject.transform.GetChild(0).transform.localScale.x > 0.25f))
+            {
+                scoreNumber -= 1000;
+                penalite(0.05f);
+                combo = 1;
+            }
             //int i = Int32.Parse(objectifL.text);
-            if(gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
-            L--;
+            else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
+            {
+
+                scoreNumber += 1000 * combo;
+
+                L--;
+                combo++;
+
+            }
+            else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.25f)
+            {
+
+                scoreNumber += 1000 + 1000 * combo;
+            //    scoreText.text = "Scorelol: " + scoreNumber    ;
+                L--;
+                combo++;
+
+            }
+            
             else
-                penalite(3.0F);
+            penalite(0.05f);
             L = L < 0 ? 0 : L;
             //objectifL.text = " " + i;
         }
         else if (gameObject.name == "Nletter")
         {
             //int i = Int32.Parse(objectifN.text);
-            if (N == 0)
-                penalite(3.0F);
-            if (gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
+            if (N == 0 && (gameObject.transform.GetChild(0).transform.localScale.x > 0.25f))
+            {
+
+                scoreNumber -= 1000;
+                penalite(0.05f);
+                combo = 1;
+            }
+            else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
+            {
+                scoreNumber += 1000 * combo;
+             //   scoreText.text = "Scorelol: " + scoreNumber;
+
+                combo++;
                 N--;
+
+            }
+            else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.25f)
+            {
+                scoreNumber += 1000 + 1000 * combo;
+             //   scoreText.text = "Scorelol: " + scoreNumber;
+
+                combo++;
+                N--;
+
+            }
+         
             else
-                penalite(3.0F);
+                penalite(0.05f);
             N = N < 0 ? 0 : N;
             //objectifN.text = " " + i;
         }
         else if (gameObject.name == "MLletter")
         {
             //int i = Int32.Parse(objectifML.text);
-            if (ML == 0)
-                penalite(3.0F);
-            if (gameObject.transform.GetChild(0).transform.localScale.x < 0.22f)
+            if (ML == 0 && (gameObject.transform.GetChild(0).transform.localScale.x > 0.25f))
+            {
+                scoreNumber -= 1000;
+                penalite(0.05f);
+                combo = 1;
+            }
+            else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.23f)
+            {
+                scoreNumber += 1000 * combo;
+             //   scoreText.text = "Scorelol: " + scoreNumber;
+
+                combo++;
                 ML--;
-            else
-                penalite(3.0F);
+            }
+            else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.25f)
+            {
+                scoreNumber += 1000 + 1000 * combo;
+               // scoreText.text = "Scorelol: " + scoreNumber;
+
+                combo++;
+                ML--;
+            }
+          
+            
             ML = ML < 0 ? 0 : ML;
             //objectifML.text = " " + i;
         }
         else if (gameObject.name == "Fletter")
         {
-            penalite(3.0F);
+            if (gameObject.transform.GetChild(0).transform.localScale.x > 0.25f)
+            {
+                combo = 1;
+                penalite(0.05f);
+            }
+           else if (gameObject.transform.GetChild(0).transform.localScale.x < 0.25f)
+            {
+                scoreNumber -= 1000;
+                combo = 1;  
+                penalite(0.05f);
+            }
+            
         }
 
         if (N == 0 && L == 0 && ML == 0)
@@ -438,10 +541,10 @@ public IEnumerator Breath(GameObject obj)
             objectifN.text = " " + N.ToString();
             objectifL.text = " " + L.ToString();
             objectifML.text = " " + ML.ToString();
-            bonus(3.0f);
+            bonus(3f);
             //TODO Circle_timer.fillAmount = 1;
         }
-
+        Scoretext.text = scoreNumber.ToString() ;
     }
 
 }

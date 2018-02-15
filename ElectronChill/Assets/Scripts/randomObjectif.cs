@@ -11,7 +11,7 @@ public class randomObjectif : MonoBehaviour
     public Text objectifN;
     public Text objectifL;
     public Text objectifML;
-    public Text score;
+    int numberObjFill= 0;
 
     public int N;
     public int L;
@@ -26,19 +26,24 @@ public class randomObjectif : MonoBehaviour
         objectifN.text = " " + N.ToString();
         objectifL.text = " " + L.ToString();
         objectifML.text = " " + ML.ToString();
+        numberObjFill++;
+
+        if(numberObjFill>2  )
+            Application.LoadLevel("you win");
+
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        
         if (objectifN.text.Equals(" 0") && objectifL.text.Equals(" 0") && objectifML.text.Equals(" 0"))
         {
             Debug.Log("Tomorow");
             string[] separators = { ",", ".", "!", "?", ";", ":", " " };
-            string[] words = score.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            int i = Int32.Parse(words[1]);
-            i++;
+         //   string[] words = score.text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+          //  int i = Int32.Parse(words[1]);
+           // i++;
           /*  score.text = words[0] + " " + i;
             if (i >= 10)
                 Application.LoadLevel("You Win");

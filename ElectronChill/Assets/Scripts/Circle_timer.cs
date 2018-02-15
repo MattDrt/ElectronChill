@@ -8,7 +8,21 @@ public class Circle_timer : MonoBehaviour
 
     public UnityEngine.UI.Image circle_timer;
 
-    float waitTime = 30.0f;
+    float waitTime = 60.0f;
+
+    public float WaitTime
+    {
+        get
+        {
+            return waitTime;
+        }
+
+        set
+        {
+            waitTime = value;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -19,7 +33,7 @@ public class Circle_timer : MonoBehaviour
     void Update()
     {
 
-        circle_timer.fillAmount -= 1.0f / waitTime * Time.deltaTime;
+        circle_timer.fillAmount -= 1.0f / WaitTime * Time.deltaTime;
 
         if (circle_timer.fillAmount == 0)
         {
