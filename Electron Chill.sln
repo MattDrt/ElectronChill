@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electron Chill", "Assembly-CSharp.csproj", "{B80D5A8A-E46F-4902-89EB-70699B77825B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B80D5A8A-E46F-4902-89EB-70699B77825B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B80D5A8A-E46F-4902-89EB-70699B77825B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B80D5A8A-E46F-4902-89EB-70699B77825B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B80D5A8A-E46F-4902-89EB-70699B77825B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
